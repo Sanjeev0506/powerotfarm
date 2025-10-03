@@ -1,0 +1,135 @@
+/* =================== GALLERY PAGE STYLES =================== */
+
+/* --- Media Gallery Section --- */
+.media-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.media-thumbnail {
+    /* Inherits general card styles from global.css */
+    cursor: pointer;
+}
+
+.media-content-wrapper {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+}
+
+.media-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+    min-height: 220px;
+}
+.media-thumbnail:hover img {
+    transform: scale(1.05);
+}
+.media-thumbnail::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
+    transition: opacity 0.3s ease;
+}
+.play-icon-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-headings);
+    z-index: 2;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+.media-thumbnail:hover .play-icon-wrapper {
+    opacity: 1;
+}
+.media-thumbnail:hover::after {
+    opacity: 0;
+}
+.media-thumbnail h3 {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    color: var(--text-headings);
+    z-index: 2;
+    font-size: 1.25rem;
+}
+
+/* --- Media Modal Styles (modified for center view) --- */
+.media-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.media-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-modal {
+    position: absolute;
+    top: -2.5rem;
+    right: -2.5rem;
+    color: var(--text-headings);
+    font-size: 3rem;
+    font-weight: 300;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-modal:hover {
+    color: var(--accent-primary);
+}
+
+.modal-body {
+    position: relative;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#modal-image-viewer,
+#modal-video-player,
+#modal-youtube-player {
+    max-width: 100%;
+    max-height: 90vh;
+    display: block;
+}
+
+#modal-image-viewer {
+    object-fit: contain;
+}

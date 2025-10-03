@@ -1,0 +1,13 @@
+/* =================== PRODUCTS PAGE STYLES =================== */
+
+/* --- Products Section --- */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+/* Note: The styles for `.product-card`, `.product-card-img`, and 
+   `.product-card-content` are already in `global.css` since they
+   are used across multiple pages. No need to repeat them here.
+*/

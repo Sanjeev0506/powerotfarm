@@ -1,0 +1,72 @@
+/* =================== SHARED CONTACT DETAILS SECTION STYLES =================== */
+/* These styles are applied to the detailed contact/hours block on interior pages. */
+
+.contact-details-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+}
+
+@media (min-width: 768px) {
+    .contact-details-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+    }
+}
+
+.contact-details-cta h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-headings); /* Ensure dark theme readability */
+}
+
+.contact-details-cta p {
+    margin-bottom: 1.5rem;
+}
+
+.delivery-note {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    max-width: max-content;
+    color: var(--text-primary);
+}
+.delivery-note i {
+    color: var(--accent-cta);
+}
+
+.contact-details-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.contact-info-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.contact-info-block i, .contact-info-block svg {
+    flex-shrink: 0;
+    margin-top: 5px;
+    color: var(--accent-primary); /* Use a defined variable */
+}
+
+.contact-info-block h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    color: var(--text-headings);
+}
+
+.contact-info-block p {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+/* Ensure icons are created for the new file */
+/* Note: The lucide script call handles icon creation in the HTML */
