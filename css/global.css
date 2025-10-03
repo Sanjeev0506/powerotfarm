@@ -646,3 +646,16 @@ a:hover { color: var(--text-headings); }
     margin: 0;
     font-size: 1rem;
 }
+/* Add this new button style to your existing .btn styles in global.css */
+.btn-secondary {
+    background-color: transparent;
+    color: var(--accent-cta);
+    border: 1px solid var(--accent-cta);
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent-cta);
+    color: var(--background-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(245, 158, 11, 0.2);
+}

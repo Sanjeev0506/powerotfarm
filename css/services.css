@@ -109,3 +109,12 @@ td {
 /* The detailed contact grid styles have been moved to css/contact-details.css 
     to be reused on multiple pages.
 */
+/* Add this new style to services.css */
+/* Replace the old .card-buttons style in services.css with this one */
+.card-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center; /* This is the key change for vertical alignment */
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
