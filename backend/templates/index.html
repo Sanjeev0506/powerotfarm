@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power OT Farms</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/png" href="{% static 'assets/favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <meta name="robots" content="noindex,nofollow">
+</head>
+<body>
+    <!-- The frontend HTML is included here but paths to assets use the static tag. For brevity only the top & bottom sections are included. -->
+    <header class="header" id="header">
+        <nav class="navbar container">
+            <a href="/" class="nav-logo">POWER OT FARMS</a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/about.html" class="nav-link">About Us</a></li>
+                <li><a href="/services.html" class="nav-link">Services</a></li>
+                <li><a href="/products.html" class="nav-link">Products</a></li>
+                <li><a href="/payment.html" class="nav-link">Order</a></li>
+                <li><a href="/process.html" class="nav-link">Our Process</a></li>
+                <li><a href="/gallery.html" class="nav-link">Gallery</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i data-lucide="menu"></i>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+    <!-- The rest of your frontend content can be copied similarly, but static assets should be referenced via the static tag -->
+        <section class="hero" id="hero">
+            <div class="hero-video-wrapper">
+                <video class="hero-video" autoplay muted loop playsinline>
+                    <source src="{% static 'assets/hero-video.mp4' %}" type="video/mp4">
+                </video>
+            </div>
+            <div class="hero-content">
+                <h1>Your Trusted Source for Premium Fish & Farming Supplies</h1>
+                <a href="/products.html" class="btn btn-primary">Explore Our Products</a>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contact" class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>© <span id="year"></span> Designed by Power OT Farms</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'script.js' %}"></script>
+</body>
+</html>
