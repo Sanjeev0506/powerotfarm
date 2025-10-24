@@ -29,6 +29,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # corsheaders should be high in the middleware stack
     'corsheaders.middleware.CorsMiddleware',
+    # development middleware to disable caching of HTML/static responses so edits show immediately
+    # 'powerotfarm.middleware.NoCacheForDevMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -86,8 +88,12 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR.parent / 'frontend'  # points directly to frontend folder
+]
+# Comment out STATIC_ROOT in development to serve files directly
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # CORS settings - default to permissive in DEBUG; set env var DJANGO_CORS_ALLOW_ALL=False to restrict
 CORS_ALLOW_ALL_ORIGINS = os.getenv('DJANGO_CORS_ALLOW_ALL', 'True') == 'True' if DEBUG else os.getenv('DJANGO_CORS_ALLOW_ALL', 'False') == 'True'
@@ -111,3 +117,8 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 CONTACT_NOTIFICATION_EMAIL = os.getenv('CONTACT_NOTIFICATION_EMAIL', 'info@powerotfarms.com')
+
+# Hubtel payment gateway settings
+HUBTEL_MERCHANT_ACCOUNT = os.getenv('HUBTEL_MERCHANT_ACCOUNT', '')
+HUBTEL_API_KEY = os.getenv('HUBTEL_API_KEY', '')
+SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000')

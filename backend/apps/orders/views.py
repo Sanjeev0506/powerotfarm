@@ -1,5 +1,6 @@
 import json
-from decimal import Decimal
+import decimal
+from decimal import Decimal, ROUND_HALF_UP
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.db.models import Sum, F
 from django.views.decorators.http import require_POST
@@ -18,6 +19,7 @@ def list_products(request):
 def create_order(request):
     try:
         data = json.loads(request.body.decode('utf-8'))
+        print("Received order data:", json.dumps(data, indent=2))
     except Exception:
         return HttpResponseBadRequest('Invalid JSON')
 
@@ -26,6 +28,17 @@ def create_order(request):
 
     if not items:
         return JsonResponse({'error': 'No items provided'}, status=400)
+
+    # Validate that each item has quantity and unit_price
+    for item in items:
+        if 'quantity' not in item or 'unit_price' not in item:
+            return JsonResponse({'error': 'Each item must have quantity and unit_price'}, status=400)
+        # Ensure values are numeric
+        try:
+            item['quantity'] = int(item['quantity'])
+            item['unit_price'] = Decimal(str(item['unit_price']))
+        except (ValueError, TypeError, decimal.InvalidOperation):
+            return JsonResponse({'error': 'Invalid quantity or unit_price'}, status=400)
 
     # Basic customer data
     name = customer.get('name') or data.get('customer_name') or 'Guest'
@@ -44,21 +57,23 @@ def create_order(request):
 
     total = Decimal('0.00')
     for it in items:
-        # accept either product id or product_name/unit_price
         product_id = it.get('product')
         product_name = it.get('product_name') or it.get('name')
-        quantity = int(it.get('quantity', 1))
-        unit_price = Decimal(str(it.get('unit_price', '0.00')))
+        quantity = int(it['quantity'])  # Already validated
+        unit_price = Decimal(str(it['unit_price']))  # Already validated
 
+        # Only use product for reference, NOT for price
         product = None
         if product_id:
             try:
                 product = Product.objects.get(id=product_id)
-                product_name = product.name
-                unit_price = product.unit_price
+                if not product_name:
+                    product_name = product.name
             except Product.DoesNotExist:
-                product = None
+                pass
 
+        print(f"Creating order item: {quantity}x {product_name} @ {unit_price} each")
+        
         item = OrderItem.objects.create(
             order=order,
             product=product,
@@ -66,9 +81,22 @@ def create_order(request):
             quantity=quantity,
             unit_price=unit_price,
         )
-        total += unit_price * quantity
+        
+        item_total = unit_price * quantity
+        print(f"Item total for {quantity}x {product_name}: {item_total} (unit price: {unit_price})")
+        total += item_total
 
-    order.total_amount = total
+    print(f"Subtotal before tax: {total}")
+    
+    # apply tax to match frontend behaviour (5% VAT)
+    TAX_RATE = Decimal('0.05')
+    tax = (total * TAX_RATE).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    total_with_tax = (total + tax).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    
+    print(f"Tax amount ({TAX_RATE * 100}%): {tax}")
+    print(f"Final total with tax: {total_with_tax}")
+
+    order.total_amount = total_with_tax
     order.save()
 
     return JsonResponse({'id': order.id, 'total_amount': str(order.total_amount)})
@@ -77,7 +105,6 @@ def create_order(request):
 @csrf_exempt
 @require_POST
 def pay_order(request, order_id):
-    # For now, simulate payment. Later integrate Hubtel.
     try:
         order = Order.objects.get(id=order_id)
     except Order.DoesNotExist:
@@ -89,18 +116,28 @@ def pay_order(request, order_id):
     except Exception:
         data = {}
 
-    payment_method = data.get('payment_method', 'cash_on_delivery')
+    # Get customer phone number for payment
+    customer_phone = data.get('phone_number') or order.customer_phone
+    if not customer_phone:
+        return JsonResponse({'error': 'Customer phone number is required'}, status=400)
 
-    # If payment_method is hubtel, we would create a payment request here.
-    if payment_method == 'cash_on_delivery':
-        order.paid = False
-        order.save()
-        return JsonResponse({'status': 'pending', 'message': 'Cash on delivery selected', 'order_id': order.id})
+    # Create Hubtel payment request
+    from apps.payments.gateways import create_hubtel_payment
+    payment_response = create_hubtel_payment(order, customer_phone)
+    
+    if payment_response.get('status') == 'error':
+        return JsonResponse({
+            'status': 'error',
+            'message': payment_response.get('message', 'Payment initialization failed')
+        }, status=500)
 
-    # Simulate instant success for demo
-    order.paid = True
-    order.save()
-    return JsonResponse({'status': 'paid', 'order_id': order.id})
+    # Return checkout URL and payment data
+    return JsonResponse({
+        'status': payment_response.get('status'),
+        'checkout_url': payment_response.get('data', {}).get('checkoutUrl'),
+        'client_reference': payment_response.get('data', {}).get('clientReference'),
+        'order_id': order.id
+    })
 
 
 @csrf_exempt
@@ -155,7 +192,10 @@ def fish_sales_order(request):
     )
 
     agg = order.items.aggregate(total=Sum(F('unit_price') * F('quantity')))
-    order.total_amount = agg.get('total') or Decimal('0.00')
+    subtotal = agg.get('total') or Decimal('0.00')
+    TAX_RATE = Decimal('0.05')
+    tax = (subtotal * TAX_RATE).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    order.total_amount = (subtotal + tax).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
     order.save()
 
     return JsonResponse({'ok': True, 'order_id': order.id})
